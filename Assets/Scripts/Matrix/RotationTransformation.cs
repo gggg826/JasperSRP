@@ -53,4 +53,25 @@ public class RotationTransformation : TransformationBase
 
         return m_XAxis * coordinate.x + m_YAxis * coordinate.y + m_ZAxis * coordinate.z;
     }
+
+    public override Matrix4x4 Matrix()
+    {
+        //三轴旋转弧度
+        m_RadX = Mathf.Deg2Rad * m_TransformVector3.x;
+        m_RadY = Mathf.Deg2Rad * m_TransformVector3.y;
+        m_RadZ = Mathf.Deg2Rad * m_TransformVector3.z;
+
+        m_SinX = Mathf.Sin(m_RadX);
+        m_CosX = Mathf.Cos(m_RadX);
+        m_sinY = Mathf.Sin(m_RadY);
+        m_CosY = Mathf.Cos(m_RadY);
+        m_sinZ = Mathf.Sin(m_RadZ);
+        m_CosZ = Mathf.Cos(m_RadZ);
+
+        m_TransformMatrix.SetRow(0, new Vector4(m_CosY * m_CosZ, -m_CosY * m_sinZ, m_sinY, 0));
+        m_TransformMatrix.SetRow(1, new Vector4(m_sinZ, m_CosX * m_CosZ - m_SinX * m_sinY * m_sinZ, -m_SinX * m_CosY, 0));
+        m_TransformMatrix.SetRow(2, new Vector4(-m_sinY * m_CosZ, m_SinX * m_CosZ + m_CosX * m_sinY * m_sinZ, m_CosX * m_CosY, 0));
+        m_TransformMatrix.SetRow(3, new Vector4(0, 0, 0, 1));
+        return m_TransformMatrix;
+    }
 }

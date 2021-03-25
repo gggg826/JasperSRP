@@ -13,6 +13,8 @@ public class TransfromationGrid : MonoBehaviour
 
     private List<TransformationBase> m_Transformations;
 
+    private Matrix4x4 m_TransformationMatrix;
+
     void Awake()
     {
         m_VertexGrid = new Transform[GRID_COUNT * GRID_COUNT * GRID_COUNT];
@@ -30,7 +32,7 @@ public class TransfromationGrid : MonoBehaviour
         m_Transformations = new List<TransformationBase>();
     }
 
-    void Update()
+    void Update_Old()
     {
         //为什么要在Update获取组件？
         //这样就可以在保持播放模式的同时使用Transform组件，并立即看到结果。
@@ -49,6 +51,36 @@ public class TransfromationGrid : MonoBehaviour
                     m_VertexGrid[i].localPosition = TransformVertex(x, y, z);
                 }
             }
+        }
+    }
+
+    void Update()
+    {
+        UpdateTransformationMatrix();
+        for (int i = 0, x = 0; x < GRID_COUNT; x++)
+        {
+            for (int y = 0; y < GRID_COUNT; y++)
+            {
+                for (int z = 0; z < GRID_COUNT; z++, i++)
+                {
+                    m_VertexGrid[i].localPosition = TransformVertex(x, y, z);
+                }
+            }
+        }
+    }
+
+    private void UpdateTransformationMatrix()
+    {
+        GetComponents<TransformationBase>(m_Transformations);
+        if(m_Transformations.Count < 1)
+        {
+            return;
+        }
+
+        m_TransformationMatrix = m_Transformations[0].Matrix();
+        for (int i = 0; i < m_Transformations.Count; i++)
+        {
+            m_TransformationMatrix = m_Transformations[i].Matrix() * m_TransformationMatrix;
         }
     }
 
@@ -71,10 +103,14 @@ public class TransfromationGrid : MonoBehaviour
     private Vector3 TransformVertex(int x, int y, int z)
     {
         Vector3 coordinate = GetCoordinate(x, y, z);
-        for (int i = 0; i < m_Transformations.Count; i++)
-        {
-            coordinate = m_Transformations[i].Apply(coordinate);
-        }
-        return coordinate;
+
+        // old code
+        //for (int i = 0; i < m_Transformations.Count; i++)
+        //{
+        //    coordinate = m_Transformations[i].Apply(coordinate);
+        //}
+        //return coordinate;
+
+        return m_TransformationMatrix.MultiplyPoint(coordinate);
     }
 }
