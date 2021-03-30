@@ -365,3 +365,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TransformVector3: {x: 0, y: 0, z: 0}
   m_FocalLength: 1
+  m_Type: 0
